@@ -135,6 +135,15 @@ class H3Tokenizer:
         Returns:
             Decoded text string
         """
+        # Tests and training code may pass a tensor slice directly. The
+        # Hugging Face tokenizer expects a Python sequence of token IDs.
+        if hasattr(token_ids, "detach"):
+            token_ids = token_ids.detach()
+        if hasattr(token_ids, "cpu"):
+            token_ids = token_ids.cpu()
+        if hasattr(token_ids, "tolist"):
+            token_ids = token_ids.tolist()
+
         return self.tokenizer.decode(token_ids, skip_special_tokens=skip_special_tokens)
 
     def _validate_tokenizer(self) -> None:
